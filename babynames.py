@@ -37,7 +37,13 @@ Suggested milestones for incremental development:
  - Build the [year, 'name rank', ... ] list and print it
  - Fix main() to use the extract_names list
 """
+__author__ = "Koren Nyles, Chris Wilson, Sean Bailey"
+__help__ = "geetarista"
 
+
+def alpha(str):
+    if str.isdigit(): return str
+    return str[:str.find(' ')]
 
 def extract_names(filename):
     """
@@ -45,9 +51,21 @@ def extract_names(filename):
     with the year string followed by the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
-    names = []
-    # +++your code here+++
-    return names
+    res = []
+    f = open(filename, 'rU')
+    str = f.read()
+
+    year = re.search(r'Popularity in (\d+)', str)
+    year = year.group(1)
+    res.append(year)
+
+    groups = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', str)
+
+    for group in groups:
+        res.append(group[1] + ' ' + group[0])
+        res.append(group[2] + ' ' + group[0])
+
+    return sorted(res, key=alpha)
 
 
 def create_parser():
@@ -82,6 +100,20 @@ def main(args):
     # or to write the list to a summary file e.g. `baby1990.html.summary`
 
     # +++your code here+++
+    for filename in file_list:
+        print("working on file: {}".format(filename))
+        names = extract_names(filename)
+
+        # Make text out of the whole list
+        text = '\n'.join(names)
+
+        if create_summary:
+            with open(filename + '.summary', 'w') as outf:
+                outf.write(text + '\n')
+            
+        else:
+            print(text)
+        # LAB(end solution)
 
 
 if __name__ == '__main__':
